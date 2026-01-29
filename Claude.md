@@ -4,100 +4,111 @@ AI-powered UGC (User Generated Content) video creation platform that generates m
 
 ## Tech Stack
 
-**Frontend:** React 19 + TypeScript + Vite + Tailwind CSS + Zustand
-**Backend:** Express 5 + TypeScript + Supabase
+**Framework:** Next.js 15 (App Router) + React 19 + TypeScript
+**Styling:** Tailwind CSS 4
+**State:** Zustand
+**Auth/DB:** Supabase (PostgreSQL + Auth + Storage)
 **External APIs:** Kie.ai (avatars), OpenAI (scripts), Sync.so (lip-sync), FAL.ai (video processing)
 
 ## Project Structure
 
 ```
 ugc-creator/
-├── src/                    # Frontend (React)
-│   ├── pages/              # Dashboard, CreateVideo, Library, Login, Register
-│   ├── components/         # UI components
-│   ├── services/api.ts     # API client (Axios)
-│   ├── stores/             # Zustand stores (auth, wizard)
-│   └── lib/supabase.ts     # Supabase client
-├── server/                 # Backend (Express)
-│   └── src/
-│       ├── index.ts        # Entry point - serves API + static files
-│       ├── routes/         # video, videos, products, library
-│       ├── services/       # kie.ts, openai.ts, sync.ts, fal.ts
-│       └── middleware/     # auth.ts (JWT verification)
-├── dist/                   # Built frontend (output)
+├── app/                        # Next.js App Router
+│   ├── layout.tsx             # Root layout
+│   ├── providers.tsx          # React Query + Auth provider
+│   ├── (auth)/                # Auth route group
+│   │   ├── login/page.tsx
+│   │   └── register/page.tsx
+│   ├── (dashboard)/           # Protected route group
+│   │   ├── layout.tsx         # Dashboard layout with sidebar
+│   │   ├── page.tsx           # Dashboard
+│   │   ├── create/page.tsx    # Video creation wizard
+│   │   └── library/page.tsx   # Video library
+│   └── api/                   # API routes
+│       ├── health/route.ts
+│       ├── video/             # Video generation endpoints
+│       └── videos/            # Video CRUD endpoints
+├── components/                 # React components
+│   ├── layout/                # MainLayout, Header, Sidebar
+│   ├── ui/                    # Button, Card, Badge, etc.
+│   ├── avatar/
+│   ├── background/
+│   ├── script/
+│   └── upload/
+├── lib/                       # Utilities
+│   ├── supabase/              # Supabase clients
+│   │   ├── client.ts          # Browser client
+│   │   ├── server.ts          # Server client
+│   │   └── middleware.ts      # Auth middleware helper
+│   ├── api.ts                 # API client (Axios)
+│   ├── utils.ts               # Utility functions
+│   └── constants.ts           # Demo data
+├── stores/                    # Zustand stores
+│   ├── authStore.ts
+│   └── wizardStore.ts
+├── types/                     # TypeScript types
+├── middleware.ts              # Next.js middleware (auth)
+├── next.config.ts
 └── package.json
 ```
 
 ## Commands
 
 ```bash
-npm run dev        # Frontend dev server (Vite)
-npm run server     # Backend dev server (Express with nodemon)
-npm run dev:all    # Both frontend + backend for development
-
-npm run build      # Build frontend to dist/
-npm run start      # Start Express server (serves dist/ + API)
-npm run prod       # Build + start (production)
+npm run dev        # Development server (http://localhost:3000)
+npm run build      # Production build
+npm run start      # Start production server
+npm run lint       # ESLint
 ```
-
-## Single Server Deployment
-
-The Express server serves both:
-- Static files from `dist/` (built React app)
-- API routes at `/api/*`
-- SPA fallback for client-side routing
-
-**To deploy:**
-1. `npm run build` - builds frontend
-2. `npm run start` - starts server on PORT (default 3000)
-
-## API Endpoints
-
-| Endpoint | Description |
-|----------|-------------|
-| `POST /api/video/script/generate` | Generate script (OpenAI) |
-| `POST /api/video/generate` | Start video generation |
-| `GET /api/video/status/:taskId` | Check generation status |
-| `POST /api/video/next-scene` | Extract frame for next scene |
-| `POST /api/video/generate-scene` | Generate scene with frame |
-| `POST /api/video/combine` | Combine scenes into final video |
-| `POST /api/video/lipsync` | Start lip-sync processing |
-| `GET/POST/PATCH/DELETE /api/videos/*` | Video CRUD (auth required) |
-| `GET /health` | Health check |
 
 ## Environment Variables
 
 ```
 # Supabase
-SUPABASE_URL
-SUPABASE_SERVICE_ROLE_KEY
-SUPABASE_ANON_KEY
-VITE_SUPABASE_URL
-VITE_SUPABASE_ANON_KEY
+NEXT_PUBLIC_SUPABASE_URL=your_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_key
 
 # External APIs
-OPENAI_API_KEY
-KIE_AI_API_KEY
-FAL_KEY
-SYNC_SO_API_KEY
-
-# Server
-PORT=3000
+OPENAI_API_KEY=
+KIE_AI_API_KEY=
+FAL_KEY=
+SYNC_SO_API_KEY=
 ```
+
+## API Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/health` | Health check |
+| `POST /api/video/script/generate` | Generate script (OpenAI) |
+| `POST /api/video/generate` | Start video generation |
+| `GET /api/video/status/[taskId]` | Check generation status |
+| `POST /api/video/next-scene` | Extract frame for next scene |
+| `POST /api/video/generate-scene` | Generate scene with frame |
+| `POST /api/video/combine` | Combine scenes into final video |
+| `POST /api/video/lipsync` | Start lip-sync processing |
+| `GET/POST /api/videos` | Video CRUD |
+| `GET /api/videos/completed` | Get completed videos |
+| `GET/PATCH/DELETE /api/videos/[id]` | Video by ID |
+
+## Authentication
+
+- Uses Supabase Auth with cookie-based sessions
+- Middleware protects all routes except `/login`, `/register`, `/api/*`
+- Auth state managed via Zustand store
 
 ## Video Generation Flow
 
 1. **Script Generation** - OpenAI GPT-4o creates Bulgarian UGC script
-2. **Scene Splitting** - Script divided into ~8 second scenes (16-22 words each)
+2. **Scene Splitting** - Script divided into ~8 second scenes
 3. **First Scene** - Kie.ai generates avatar video with product image
 4. **Frame Extraction** - FAL.ai extracts last frame for continuity
-5. **Continuation Scenes** - Kie.ai generates remaining scenes using extracted frames
+5. **Continuation Scenes** - Kie.ai generates remaining scenes
 6. **Lip Sync** - Sync.so applies lip-sync with ElevenLabs TTS
 7. **Combining** - FAL.ai combines all scenes into final video
 
-## Database (Supabase)
+## Migration Notes
 
-Main table: `videos`
-- Stores generation progress, scene URLs, final video URL
-- Row-level security (RLS) enabled
-- User authentication via Supabase Auth
+This project was migrated from React + Vite + Express to Next.js App Router. The old `src/`, `server/`, and `api/` directories contain legacy code that can be removed once the API routes are fully migrated.
