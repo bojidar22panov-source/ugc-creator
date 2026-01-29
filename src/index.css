@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+/* Bulgarian UGC Video Generator - Custom Design System */
+
+@theme {
+  /* Primary brand colors - Vibrant indigo */
+  --color-primary-50: oklch(0.97 0.02 270);
+  --color-primary-100: oklch(0.94 0.04 270);
+  --color-primary-200: oklch(0.88 0.08 270);
+  --color-primary-300: oklch(0.79 0.13 270);
+  --color-primary-400: oklch(0.70 0.17 270);
+  --color-primary-500: oklch(0.59 0.21 270);
+  --color-primary-600: oklch(0.52 0.22 270);
+  --color-primary-700: oklch(0.45 0.20 270);
+  --color-primary-800: oklch(0.38 0.17 270);
+  --color-primary-900: oklch(0.32 0.13 270);
+  
+  /* Accent colors - Emerald green */
+  --color-accent-50: oklch(0.97 0.03 165);
+  --color-accent-100: oklch(0.93 0.06 165);
+  --color-accent-200: oklch(0.87 0.10 165);
+  --color-accent-300: oklch(0.78 0.14 165);
+  --color-accent-400: oklch(0.68 0.17 165);
+  --color-accent-500: oklch(0.59 0.18 165);
+  --color-accent-600: oklch(0.52 0.16 165);
+  --color-accent-700: oklch(0.45 0.14 165);
+  --color-accent-800: oklch(0.38 0.11 165);
+  --color-accent-900: oklch(0.32 0.09 165);
+  
+  /* Surface colors - Slate dark mode */
+  --color-surface-50: oklch(0.98 0.01 260);
+  --color-surface-100: oklch(0.96 0.01 260);
+  --color-surface-200: oklch(0.93 0.01 260);
+  --color-surface-300: oklch(0.87 0.02 260);
+  --color-surface-400: oklch(0.70 0.03 260);
+  --color-surface-500: oklch(0.55 0.03 260);
+  --color-surface-600: oklch(0.45 0.03 260);
+  --color-surface-700: oklch(0.37 0.03 260);
+  --color-surface-800: oklch(0.27 0.03 260);
+  --color-surface-900: oklch(0.21 0.03 260);
+  --color-surface-950: oklch(0.13 0.03 260);
+  
+  /* Semantic colors */
+  --color-success: var(--color-accent-500);
+  --color-warning: oklch(0.75 0.18 85);
+  --color-error: oklch(0.63 0.24 25);
+  --color-info: var(--color-primary-400);
+  
+  /* Typography */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  
+  /* Border radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  
+  /* Shadows */
+  --shadow-glow: 0 0 20px oklch(0.59 0.21 270 / 0.3);
+  --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-elevated: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* Base styles */
+body {
+  font-family: var(--font-sans);
+  background: linear-gradient(135deg, var(--color-surface-950) 0%, var(--color-surface-900) 100%);
+  color: var(--color-surface-100);
+  min-height: 100vh;
+}
+
+/* Custom utility classes */
+@utility glass {
+  background: oklch(0.27 0.03 260 / 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid oklch(0.37 0.03 260 / 0.5);
+}
+
+@utility glass-light {
+  background: oklch(0.98 0.01 260 / 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid oklch(0.93 0.01 260 / 0.5);
+}
+
+@utility gradient-primary {
+  background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-600) 100%);
+}
+
+@utility gradient-accent {
+  background: linear-gradient(135deg, var(--color-accent-500) 0%, var(--color-accent-600) 100%);
+}
+
+@utility gradient-surface {
+  background: linear-gradient(135deg, var(--color-surface-800) 0%, var(--color-surface-900) 100%);
+}
+
+@utility text-gradient {
+  background: linear-gradient(135deg, var(--color-primary-400) 0%, var(--color-accent-400) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@utility animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@utility animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@utility animate-slide-up {
+  animation: slide-up 0.4s ease-out;
+}
+
+@utility animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px oklch(0.59 0.21 270 / 0.3); }
+  50% { box-shadow: 0 0 40px oklch(0.59 0.21 270 / 0.5); }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface-900);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-600);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-surface-500);
+}
+
+/* Focus styles */
+*:focus-visible {
+  outline: 2px solid var(--color-primary-500);
+  outline-offset: 2px;
+}
